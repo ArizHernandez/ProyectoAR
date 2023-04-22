@@ -37,7 +37,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <c:forEach items="${rols}" var="rol">
+                        <c:forEach items="${actualRol}" var="rol">
                             <tr>
                                 <td>${rol.idRol}</td>
                                 <td>${rol.name}</td>

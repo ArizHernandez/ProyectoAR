@@ -12,7 +12,7 @@
                     <a href="UserController?action=form" class="btn btn-info mb-md-3">Agregar <span class="fw-bolder">+</span></a>
                 </div>
                 <p class="mb-0 d-block w-auto">
-                    Total items <span class="fw-bolder">${rols.size()}</span>
+                    Total items <span class="fw-bolder">${users.size()}</span>
                 </p>
                 <form class="col-auto" method="GET" action="UserController">
                     <div class="input-group">
