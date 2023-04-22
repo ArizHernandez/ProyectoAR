@@ -2,14 +2,9 @@ package com.ar.controller;
 
 import com.ar.dao.RolDao;
 import com.ar.dao.UserDao;
+import com.ar.dao.UserDao;
 import com.ar.models.RolModel;
 import com.ar.models.UserModel;
-
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -17,51 +12,59 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.List;
 
-@WebServlet("/RolController")
-public class RolController extends HttpServlet {
-    private static final String LIST_PAGE = "rol/rol-list.jsp";
-    private static final String FORM_PAGE = "rol/rol-form.jsp";
+@WebServlet("/UserController")
+public class UserController extends HttpServlet {
+    private static final String LIST_PAGE = "user/user-list.jsp";
+    private static final String FORM_PAGE = "user/user-form.jsp";
 
 
     Connection conn = null;
     ResultSet result = null;
     PreparedStatement statement = null;
     String query = "";
-    RolDao rolDao = new RolDao();
-    UserDao userDao = new UserDao();
+    private UserDao userDao = new UserDao();
+    private RolDao rolDao = new RolDao();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         String action = req.getParameter("action");
         String id = req.getParameter("id");
-        RequestDispatcher dispatcher = null;
+        RequestDispatcher dispatcher = null;;
 
         if (action != null && action.equals("form")) {
             List<UserModel> users = userDao.list();
             req.setAttribute("users", users);
 
-            if(id != null && !id.trim().equals("")) {
-                Integer idRol = Integer.parseInt(id);
-                RolModel rol = rolDao.getById(idRol);
+            List<RolModel> rols = rolDao.list();
+            req.setAttribute("rols", rols);
 
-                req.setAttribute("actualRol", rol);
+            if(id != null && !id.trim().equals("")) {
+                Integer idUser = Integer.parseInt(id);
+                UserModel user = userDao.getById(idUser);
+
+                req.setAttribute("actualUser", user);
             }
 
             dispatcher = req.getRequestDispatcher(FORM_PAGE);
         } else {
             String search = req.getParameter("search");
 
-            List<RolModel> roles = null;
+            List<UserModel> users = null;
 
             if (search == null || search.trim().equals("")) {
-                roles = rolDao.list();
+                users = userDao.list();
             } else {
                 req.setAttribute("search", search);
-                roles = rolDao.search(search);
+                users = userDao.search(search);
             }
 
-            req.setAttribute("rols", roles);
+            req.setAttribute("users", users);
 
             dispatcher = req.getRequestDispatcher(LIST_PAGE);
         }
@@ -76,29 +79,33 @@ public class RolController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) {
         String id = req.getParameter("id");
-        String rolDeleteId = req.getParameter("idDelete");
+        String userDeleteId = req.getParameter("idDelete");
 
-        if (rolDeleteId != null) {
-            Integer idRolDelete = Integer.parseInt(rolDeleteId);
-            rolDao.delete(idRolDelete);
+        if (userDeleteId != null) {
+            Integer idRolDelete = Integer.parseInt(userDeleteId);
+            userDao.delete(idRolDelete);
 
             redirectToList(res);
             return;
         }
 
-        String name = req.getParameter("name");
-        String description = req.getParameter("description");
-        Byte active = Byte.parseByte(req.getParameter("active"));
-        String createdUser = req.getParameter("createdUser");
-        String updatedUser = req.getParameter("updatedUser");
-        RolModel rol = new RolModel(name, active, description, createdUser, updatedUser);
+        UserModel user = new UserModel();
+        user.setName(req.getParameter("name"));
+        user.setLastName(req.getParameter("lastName"));
+        user.setUser(req.getParameter("user"));
+        user.setPassword(req.getParameter("password"));
+        user.setIdRol(Integer.parseInt(req.getParameter("idRol")));
+        user.setStatus(Byte.parseByte(req.getParameter("active")));
+        user.setCreatedUser(req.getParameter("createdUser"));
+        user.setUpdatedUser(req.getParameter("updatedUser"));
+        user.setCode(req.getParameter("code"));
 
         if (id == null || id.trim().equals("")) {
-            rolDao.create(rol);
+            userDao.create(user);
         } else {
-            Integer idRol = Integer.parseInt(id);
-            rol.setIdRol(idRol);
-            rolDao.update(rol);
+            Integer idUsuario = Integer.parseInt(id);
+            user.setIdUsuario(idUsuario);
+            userDao.update(user);
         }
 
         redirectToList(res);
@@ -106,7 +113,7 @@ public class RolController extends HttpServlet {
 
     private void redirectToList(HttpServletResponse res) {
         try {
-            res.sendRedirect("RolController?action=list");
+            res.sendRedirect("UserController?action=list");
         } catch (IOException e) {
             e.printStackTrace();
         }

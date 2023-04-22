@@ -9,6 +9,7 @@
         </h2>
         <section class="container">
             <form class="row g-4" method="POST" action="RolController">
+                <input type="hidden" name="id" value="${actualRol.idRol}"/>
                 <div class="col-md-6">
                     <label class="form-label" for="name">
                         Nombre
@@ -46,12 +47,11 @@
                             class="form-select"
                             name="createdUser"
                             id="createdUser"
-                            value="${actualRol.createdUser}"
                     >
                         <option selected value="">Selecciona una opcion</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
+                        <c:forEach items="${users}" var="user">
+                            <option ${actualRol.createdUser && (actualRol.createdUser == user.name) ? "selected" : ""} value="${user.name}">${user.name}</option>
+                        </c:forEach>
                     </select>
                 </div>
                 <div class="col-md-6">
@@ -63,12 +63,11 @@
                             class="form-select"
                             name="updatedUser"
                             id="updatedUser"
-                            value="${actualRol.updatedUser}"
                     >
                         <option selected value="">Selecciona una opcion</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
+                        <c:forEach items="${users}" var="user">
+                            <option ${actualRol.updatedUser && (actualRol.updatedUser == user.name) ? "selected" : ""} value="${user.name}">${user.name}</option>
+                        </c:forEach>
                     </select>
                 </div>
                 <div class="col-12">
@@ -84,6 +83,9 @@
                     ></textarea>
                 </div>
                 <div>
+                    <a href="RolController?action=list" class="btn btn-danger mt-3">
+                        Cancelar
+                    </a>
                     <button class="btn btn-primary mt-3">
                         <%= request.getAttribute("actualRol") == null ? "Crear" : "Editar" %>
                     </button>
