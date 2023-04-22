@@ -112,3 +112,34 @@ I
 mvnw,5\d\5d837c4ed85ecaaf932c506e80ff5d7b9f3d590d
 C
 docker-compose.yaml,e\f\ef8def03dc8f162799089e9b5f4321201c8810d5
+Y
+)src/main/java/com/ar/models/RolModel.java,8\b\8b1f0e118a3a605e6c8608280f239cd9ca64cc1f
+:
+
+script.sql,a\f\af754803463001925ab886a22d501c00448532b2
+A
+insert-values.sql,a\4\a4df82cf95642f63947d4e9ce9a01d4c69a85397
+b
+2src/main/java/com/ar/controller/RolController.java,c\6\c60cffbe4b290e71cb6cdcdebdb327f38a6f7ac9
+T
+$src/main/java/com/ar/dao/RolDao.java,0\c\0c0e8ae6fd27fb881ded1a7d30c89d8730eb2013
+c
+3src/main/java/com/ar/controller/UserController.java,1\2\12369b0450534dedfa5bb9e8e6d9f235b1cc07fb
+]
+-src/main/java/com/ar/interfaces/UserCRUD.java,e\a\ea194b27b973e2f6233d851bd150904d38c159df
+U
+%src/main/java/com/ar/dao/UserDao.java,0\e\0e040896cc4714ce87a39ea2b54da4af286545b4
+Z
+*src/main/java/com/ar/models/UserModel.java,3\e\3e7287c7dcf610a06eb5c3e401a4542b51c55ca4
+P
+ src/main/webapp/rol/rol-form.jsp,4\8\4889c22210d68c2c5a1ad6df72c114524be9fde8
+R
+"src/main/webapp/user/user-form.jsp,e\d\ed4a75b9667937db352934890d4b416d03bde006
+V
+&src/main/webapp/shared/head-loader.jsp,9\0\90e23b06a9b4b346c25db2f5e3ae94b0f8436863
+P
+ src/main/webapp/rol/rol-list.jsp,6\0\60e803b96eea783574f8879bfaf13c0dd077b8f5
+R
+"src/main/webapp/user/user-list.jsp,d\2\d2c6cf90ca82eea804e4b087bccb689dd43f2e4d
+N
+src/main/webapp/shared/nav.jsp,8\3\83df3b00757e9b6b85f22c19c69a31458f279505
