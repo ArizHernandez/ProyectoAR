@@ -35,6 +35,14 @@ public class RolModel {
         this.updatedDate = updatedDate;
     }
 
+    public RolModel(String name, Byte active, String description, String createdUser, String updatedUser) {
+        this.name = name;
+        this.active = active;
+        this.description = description;
+        this.createdUser = createdUser;
+        this.updatedUser = updatedUser;
+    }
+
     public Integer getIdRol() {
         return idRol;
     }

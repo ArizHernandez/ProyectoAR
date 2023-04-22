@@ -3,19 +3,27 @@ package com.ar.dao;
 import com.ar.config.ConnConfig;
 import com.ar.controller.RolController;
 import com.ar.models.RolModel;
+import com.ar.interfaces.RolCRUD;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class RolDao {
+public class RolDao implements RolCRUD {
+    DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
     Connection conn = null;
     ResultSet result = null;
     PreparedStatement statement = null;
     String query = "";
+
 
     public List<RolModel> list() {
         List<RolModel> rols = new ArrayList<>();
@@ -29,19 +37,49 @@ public class RolDao {
             result = statement.executeQuery();
 
             while (result.next()) {
-                Integer idRol = result.getInt("ID_ROL");
-                String name = result.getString("NOMBRE");
-                Byte active = result.getByte("ACTIVO");
-                String description = result.getString("DESCRIPCION");
-                String createdUser = result.getString("USUARIO_CREA");
-                String updatedUser = result.getString("USUARIO_MOD");
-                String createdDate = result.getString("FECHA_CREA");
-                String updatedDate = result.getString("FECHA_MOD");
-
-                RolModel rol = new RolModel(idRol, name, active, description, createdUser, updatedUser, createdDate, updatedDate);
+                RolModel rol = formatToObjet(result);
                 rols.add(rol);
             }
         } catch (Exception ex) {
+            Logger.getLogger(RolController.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                ConnConfig.close(conn);
+                ConnConfig.close(statement);
+                ConnConfig.close(result);
+            } catch (SQLException ex) {
+                Logger.getLogger(RolDao.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return rols;
+    }
+
+    public List<RolModel> search(String search) {
+        List<RolModel> rols = new ArrayList<>();
+
+        try {
+            conn = ConnConfig.getConnection();
+
+            query = "SELECT ID_ROL, NOMBRE, DESCRIPCION, ACTIVO, USUARIO_CREA, USUARIO_MOD, FECHA_CREA, FECHA_MOD FROM ROL " +
+                    "WHERE NOMBRE LIKE ? OR DESCRIPCION LIKE ? OR ACTIVO LIKE ? OR USUARIO_CREA LIKE ? OR USUARIO_MOD LIKE ? OR FECHA_CREA LIKE ? OR FECHA_MOD LIKE ?;";
+            System.out.println("Executed query" + query);
+
+            statement = conn.prepareStatement(query);
+            statement.setString(1, "%" + search + "%");
+            statement.setString(2, "%" + search + "%");
+            statement.setString(3, "%" + search + "%");
+            statement.setString(4, "%" + search + "%");
+            statement.setString(5, "%" + search + "%");
+            statement.setString(6, "%" + search + "%");
+            statement.setString(7, "%" + search + "%");
+            result = statement.executeQuery();
+
+            while (result.next()) {
+                RolModel rol = formatToObjet(result);
+                rols.add(rol);
+            }
+        } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(RolController.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
@@ -62,23 +100,14 @@ public class RolDao {
         try {
             conn = ConnConfig.getConnection();
 
-            query = "SELECT (ID_ROL, NOMBRE, DESCRIPCION, ACTIVO, USUARIO_CREA, USUARIO_MOD, FECHA_CREA, FECHA_MOD) FROM ROL WHERE ID_ROL = ?";
+            query = "SELECT ID_ROL, NOMBRE, DESCRIPCION, ACTIVO, USUARIO_CREA, USUARIO_MOD, FECHA_CREA, FECHA_MOD FROM ROL WHERE ID_ROL = ?";
             System.out.println("Executed query" + query);
             statement = conn.prepareStatement(query);
             statement.setInt(1, id);
             result = statement.executeQuery();
 
             while (result.next()) {
-                Integer idRol = result.getInt("ID_ROL");
-                String name = result.getString("NOMBRE");
-                Byte active = result.getByte("ACTIVE");
-                String description = result.getString("DESCRIPCION");
-                String createdUser = result.getString("USUARIO_CREA");
-                String updatedUser = result.getString("USUARIO_MOD");
-                String createdDate = result.getString("FECHA_CREA");
-                String updatedDate = result.getString("FECHA_MOD");
-
-                rol = new RolModel(idRol, name, active, description, createdUser, updatedUser, createdDate, updatedDate);
+                rol = formatToObjet(result);
             }
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(RolController.class.getName()).log(Level.SEVERE, null, ex);
@@ -95,55 +124,10 @@ public class RolDao {
         return rol;
     }
 
-    public List<RolModel> search(String search) {
-        List<RolModel> rols = new ArrayList<>();
-
-        try {
-            conn = ConnConfig.getConnection();
-
-            query = "SELECT (ID_ROL, NOMBRE, DESCRIPCION, ACTIVO, USUARIO_CREA, USUARIO_MOD, FECHA_CREA, FECHA_MOD) FROM ROL " +
-                    "WHERE NOMBRE LIKE ?, DESCRIPCION LIKE ?, ACTIVO LIKE ?, USUARIO_CREA LIKE ?, USUARIO_MOD LIKE ?, FECHA_CREA LIKE ?, FECHA_MOD LIKE ?";
-            System.out.println("Executed query" + query);
-
-            statement = conn.prepareStatement(query);
-            statement.setString(1, "%" + search + "%");
-            statement.setString(2, "%" + search + "%");
-            statement.setString(3, "%" + search + "%");
-            statement.setString(4, "%" + search + "%");
-            statement.setString(5, "%" + search + "%");
-            statement.setString(6, "%" + search + "%");
-            statement.setString(7, "%" + search + "%");
-            result = statement.executeQuery();
-
-            while (result.next()) {
-                Integer id_rol = result.getInt("ID_ROL");
-                String name = result.getString("NOMBRE");
-                Byte active = result.getByte("ACTIVE");
-                String description = result.getString("DESCRIPCION");
-                String created_user = result.getString("USUARIO_CREA");
-                String updated_user = result.getString("USUARIO_MOD");
-                String created_date = result.getString("FECHA_CREA");
-                String updated_date = result.getString("FECHA_MOD");
-
-                RolModel rol = new RolModel(id_rol, name, active, description, created_user, updated_user, created_date, updated_date);
-                rols.add(rol);
-            }
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(RolController.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                ConnConfig.close(conn);
-                ConnConfig.close(statement);
-                ConnConfig.close(result);
-            } catch (SQLException ex) {
-                Logger.getLogger(RolDao.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        return rols;
-    }
-
     public void create(RolModel newRol) {
+        LocalDateTime todayDate = LocalDateTime.now();
+        String todayDateFormated = todayDate.toString();
+
         try {
             conn = ConnConfig.getConnection();
 
@@ -156,8 +140,8 @@ public class RolDao {
             statement.setByte(3, newRol.getActive());
             statement.setString(4, newRol.getCreatedUser());
             statement.setString(5, newRol.getUpdatedUser());
-            statement.setString(6, newRol.getCreatedDate());
-            statement.setString(7, newRol.getUpdatedDate());
+            statement.setString(6, todayDateFormated);
+            statement.setString(7, todayDateFormated);
             statement.executeUpdate();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(RolController.class.getName()).log(Level.SEVERE, null, ex);
@@ -173,10 +157,13 @@ public class RolDao {
     }
 
     public void update(RolModel rol) {
+        LocalDateTime todayDate = LocalDateTime.now();
+        String todayDateFormated = todayDate.toString();
+
         try {
             conn = ConnConfig.getConnection();
 
-            query = "UPDATE ROL SET NOMBRE = ?, DESCRIPCION = ?, ACTIVO = ?, USUARIO_CREA = ?, USUARIO_MOD = ?, FECHA_CREA = ?, FECHA_MOD = ? WHERE ID_ROL = ?";
+            query = "UPDATE ROL SET NOMBRE = ?, DESCRIPCION = ?, ACTIVO = ?, USUARIO_CREA = ?, USUARIO_MOD = ?, FECHA_MOD = ? WHERE ID_ROL = ?";
             System.out.println("Executed query" + query);
 
             statement = conn.prepareStatement(query);
@@ -185,9 +172,8 @@ public class RolDao {
             statement.setByte(3, rol.getActive());
             statement.setString(4, rol.getCreatedUser());
             statement.setString(5, rol.getUpdatedUser());
-            statement.setString(6, rol.getCreatedDate());
-            statement.setString(7, rol.getUpdatedDate());
-            statement.setInt(8, rol.getIdRol());
+            statement.setString(6, todayDateFormated);
+            statement.setInt(7, rol.getIdRol());
             statement.executeUpdate();
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(RolController.class.getName()).log(Level.SEVERE, null, ex);
@@ -221,5 +207,21 @@ public class RolDao {
                 Logger.getLogger(RolController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    private RolModel formatToObjet(ResultSet result) throws SQLException {
+        Integer idRol = result.getInt("ID_ROL");
+        String name = result.getString("NOMBRE");
+        Byte active = result.getByte("ACTIVO");
+        String description = result.getString("DESCRIPCION");
+        String createdUser = result.getString("USUARIO_CREA");
+        String updatedUser = result.getString("USUARIO_MOD");
+        Date createdDate = result.getDate("FECHA_CREA");
+        Date updatedDate = result.getDate("FECHA_MOD");
+
+        String createdDateFormatted = formatter.format(createdDate);
+        String updatedDateFormatted = formatter.format(updatedDate);
+
+        return new RolModel(idRol, name, active, description, createdUser, updatedUser, createdDateFormatted, updatedDateFormatted);
     }
 }
